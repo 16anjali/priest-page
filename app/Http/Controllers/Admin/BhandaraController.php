@@ -3,63 +3,75 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BhandaraEvent;
 use Illuminate\Http\Request;
 
 class BhandaraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $events = BhandaraEvent::orderBy('event_date', 'desc')->get();
+        return view('admin.bhandara.index', compact('events'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.bhandara.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'event_date'  => 'required|date',
+            'event_time'  => 'nullable|date_format:H:i',
+            'location'    => 'required|string|max:255',
+            'address'     => 'nullable|string|max:500',
+            'is_active'   => 'boolean',
+            'is_featured' => 'boolean',
+        ]);
+
+        $data['is_active']   = $request->boolean('is_active', true);
+        $data['is_featured'] = $request->boolean('is_featured', false);
+
+        BhandaraEvent::create($data);
+
+        return redirect()->route('admin.bhandara.index')
+                         ->with('success', 'Bhandara event added successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(BhandaraEvent $bhandara)
     {
-        //
+        return view('admin.bhandara.edit', compact('bhandara'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, BhandaraEvent $bhandara)
     {
-        //
+        $data = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'event_date'  => 'required|date',
+            'event_time'  => 'nullable|date_format:H:i',
+            'location'    => 'required|string|max:255',
+            'address'     => 'nullable|string|max:500',
+            'is_active'   => 'boolean',
+            'is_featured' => 'boolean',
+        ]);
+
+        $data['is_active']   = $request->boolean('is_active');
+        $data['is_featured'] = $request->boolean('is_featured');
+
+        $bhandara->update($data);
+
+        return redirect()->route('admin.bhandara.index')
+                         ->with('success', 'Bhandara event updated successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(BhandaraEvent $bhandara)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $bhandara->delete();
+        return redirect()->route('admin.bhandara.index')
+                         ->with('success', 'Event deleted.');
     }
 }
