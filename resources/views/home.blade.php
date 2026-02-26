@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $priest->name }} – Vedic Priest & Spiritual Guide</title>
+    <title>{{ $priest->name ?? 'Vedic Priest & Spiritual Guide' }}</title>
     <meta name="description" content="{{ $priest->short_bio }}">
 
     <!-- Fonts -->
